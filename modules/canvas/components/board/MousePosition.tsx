@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { useBoardPosition } from '../hooks/useBoardPosition';
+import { useBoardPosition } from '../../hooks/useBoardPosition';
 import { useInterval, useMouse } from 'react-use';
 import { motion } from 'framer-motion';
 import { socket } from '@/lib/socket';
@@ -19,7 +19,7 @@ const MousePosition = () => {
       socket.emit('mouse_move', getPosition(docX, x), getPosition(docY, y));
       prevPosition.current = { x: docX, y: docY };
     }
-  }, 25);
+  }, 150);
 
   return (
     <motion.div

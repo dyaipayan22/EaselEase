@@ -133,14 +133,24 @@ nextApp.prepare().then(async () => {
 
     socket.on('draw', (move) => {
       const roomId = getRoomId();
-      addMove(roomId, socket.id, move);
-      socket.broadcast.to(roomId).emit('user_draw', move, socket.id);
+
+      const timestamp = Date.now();
+      addMove(roomId, socket.id, { ...move, timestamp });
+
+      io.to(socket.id).emit('your_move', { ...move, timestamp });
+      socket.broadcast
+        .to(roomId)
+        .emit('user_draw', { ...move, timestamp }, socket.id);
     });
 
     socket.on('undo', () => {
       const roomId = getRoomId();
       undoMove(roomId, socket.id);
       socket.broadcast.to(roomId).emit('user_undo', socket.id);
+    });
+
+    socket.on('send_message', (msg) => {
+      io.to(getRoomId()).emit('new_message', socket.id, msg);
     });
 
     socket.on('mouse_move', (x, y) => {

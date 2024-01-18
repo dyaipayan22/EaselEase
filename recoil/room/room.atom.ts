@@ -1,12 +1,14 @@
 import { atom } from 'recoil';
 
+export const DEFAULT_ROOM = {
+  id: '',
+  users: new Map(),
+  usersMoves: new Map(),
+  movesWithoutUser: [],
+  userMoves: [],
+};
+
 export const roomAtom = atom<ClientRoom>({
   key: 'room',
-  default: {
-    id: '',
-    users: new Map(),
-    usersMoves: new Map(),
-    movesWithoutUser: [],
-    userMoves: [],
-  },
+  default: DEFAULT_ROOM,
 });

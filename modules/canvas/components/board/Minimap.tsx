@@ -1,8 +1,9 @@
+'use client';
 import { CANVAS_SIZE } from '@/constants/canvasSize';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useMotionValue, motion } from 'framer-motion';
 import { Dispatch, SetStateAction, forwardRef, useEffect, useRef } from 'react';
-import { useBoardPosition } from '../hooks/useBoardPosition';
+import { useBoardPosition } from '../../hooks/useBoardPosition';
 
 const Minimap = forwardRef<
   HTMLCanvasElement,
@@ -19,11 +20,11 @@ const Minimap = forwardRef<
   const miniY = useMotionValue(0);
 
   useEffect(() => {
-    miniX.onChange((newX) => {
+    miniX.on('change', (newX) => {
       if (!dragging) x.set(-newX * 7);
     });
 
-    miniY.onChange((newY) => {
+    miniY.on('change', (newY) => {
       if (!dragging) y.set(-newY * 7);
     });
 
@@ -35,7 +36,7 @@ const Minimap = forwardRef<
 
   return (
     <div
-      className="absolute right-10 top-10 z-30 bg-gray-200 rounded-lg"
+      className="absolute right-10 top-10 z-30 bg-zinc-50 rounded-lg overflow-hidden"
       ref={containerRef}
       style={{ width: CANVAS_SIZE.width / 7, height: CANVAS_SIZE.height / 7 }}
     >

@@ -3,19 +3,20 @@
 import { CANVAS_SIZE } from '@/constants/canvasSize';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { useKeyPressEvent } from 'react-use';
 import Minimap from './Minimap';
-import { useBoardPosition } from '../hooks/useBoardPosition';
-import Toolbar from './toolbar/Toolbar';
+import { useBoardPosition } from '../../hooks/useBoardPosition';
+import Toolbar from '../toolbar/Toolbar';
 import { useRoom } from '@/recoil/room';
 import { socket } from '@/lib/socket';
-import { drawAllMoves } from '../helpers/canvas.helpers';
+import { drawAllMoves } from '../../helpers/canvas.helpers';
 
-import { useSocketDraw } from '../hooks/useSocketDraw';
-import { useDraw } from '../hooks/useDraw';
+import { useSocketDraw } from '../../hooks/useSocketDraw';
+import { useDraw } from '../../hooks/useDraw';
+import Background from './Background';
 
-const Canvas = () => {
+const Canvas = ({ undoRef }: { undoRef: RefObject<HTMLButtonElement> }) => {
   const room = useRoom();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const minimapRef = useRef<HTMLCanvasElement>(null);
@@ -72,10 +73,14 @@ const Canvas = () => {
 
     window.addEventListener('keyup', handleKeyUp);
 
+    const undoBtn = undoRef.current;
+    undoBtn?.addEventListener('click', handleUndo);
+
     return () => {
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('click', handleUndo);
     };
-  }, [dragging]);
+  }, [dragging, handleUndo, undoRef]);
 
   useEffect(() => {
     if (ctx) socket.emit('joined_room');
@@ -90,15 +95,11 @@ const Canvas = () => {
 
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <Toolbar />
-      <button onClick={handleUndo} className="absolute top-0">
-        Undo
-      </button>
       <motion.canvas
         ref={canvasRef}
         width={CANVAS_SIZE.width}
         height={CANVAS_SIZE.height}
-        className={`bg-zinc-100 ${dragging && 'cursor-move'}`}
+        className={`absolute top-0 z-10 ${dragging && 'cursor-move'}`}
         style={{ x, y }}
         drag={dragging}
         dragConstraints={{
@@ -125,6 +126,7 @@ const Canvas = () => {
           handleDraw(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
         }
       />
+      <Background />
       <Minimap
         ref={minimapRef}
         dragging={dragging}
