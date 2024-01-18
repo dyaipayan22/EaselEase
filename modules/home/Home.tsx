@@ -11,6 +11,12 @@ const Home = () => {
 
   const router = useRouter();
 
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   useEffect(() => {
     socket.on('created', (roomIdFromServer) => {
       setAtomRoomId(roomIdFromServer);
@@ -40,6 +46,8 @@ const Home = () => {
     e.preventDefault();
     socket.emit('join_room', roomId, username);
   };
+
+  if (!isClient) return null;
   return (
     <div className="flex flex-col items-center">
       <h1 className="mt-24 font-extrabold text-extra leading-tight">
